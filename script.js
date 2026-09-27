@@ -960,16 +960,6 @@ setTimeout(() => {
             if (repeatBtn) repeatBtn.classList.toggle('active', tab === 'repetition');
             if (accountBtn) accountBtn.classList.toggle('active', tab === 'account');
         }
-        // Цвет верхней полосы для каждой вкладки — совпадает с градиентом
-        // .repetition-header / .account-header-v2 в CSS. Поменяете цвет там —
-        // поправьте и здесь, чтобы не разъехалось.
-        const MENU_PAGE_STATUS_BAR_COLOR = {
-            'page-topics': '#ffffff',
-            'page-path': '#ffffff',
-            'page-repetition': '#b35aeb',
-            'page-account': '#b35aeb'
-        };
-
         function showMenuPage(pageId, fromPopState = false) {
             ['page-topics', 'page-path', 'page-repetition', 'page-account'].forEach(id => {
                 const el = document.getElementById(id);
@@ -978,13 +968,6 @@ setTimeout(() => {
             document.getElementById(pageId).classList.remove('hidden');
             updateBottomNavVisibility(pageId);
 
-            // красим статус-бар сразу в момент переключения, не дожидаясь,
-            // пока обёртка сама заметит смену пикселей — без задержки/дёргания
-            alert('setStatusBarColor: ' + typeof window.setStatusBarColor
-                + ' | AndroidNative.setStatusBarColor: ' + typeof window.AndroidNative.setStatusBarColor);
-            if (window.AndroidNative && window.AndroidNative.setStatusBarColor) {
-                window.AndroidNative.setStatusBarColor('#ff0000'); // ярко-красный, чтобы точно было видно
-            }
             if (pageId === 'page-topics') updateBottomNavActive('topics');
             if (pageId === 'page-path') updateBottomNavActive('topics');
             if (pageId === 'page-repetition') updateBottomNavActive('repetition');
@@ -4013,4 +3996,4 @@ function createGraphBox(graphCommands) {
 
     graphWrapper.appendChild(iframe);
     return graphWrapper;
-        }
+                }
