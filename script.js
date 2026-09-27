@@ -979,11 +979,11 @@ setTimeout(() => {
 
             // красим статус-бар сразу в момент переключения, не дожидаясь,
             // пока обёртка сама заметит смену пикселей — без задержки/дёргания
-            alert('setStatusBarColor: ' + typeof window.setStatusBarColor + ' | AndroidNative: ' + typeof window.AndroidNative);
-            if (typeof window.setStatusBarColor === 'function') {
-                window.setStatusBarColor(MENU_PAGE_STATUS_BAR_COLOR[pageId] || '#ffffff');
+            alert('setStatusBarColor: ' + typeof window.setStatusBarColor
+                + ' | AndroidNative.setStatusBarColor: ' + typeof window.AndroidNative.setStatusBarColor);
+            if (window.AndroidNative && window.AndroidNative.setStatusBarColor) {
+                window.AndroidNative.setStatusBarColor('#ff0000'); // ярко-красный, чтобы точно было видно
             }
-
             if (pageId === 'page-topics') updateBottomNavActive('topics');
             if (pageId === 'page-path') updateBottomNavActive('topics');
             if (pageId === 'page-repetition') updateBottomNavActive('repetition');
