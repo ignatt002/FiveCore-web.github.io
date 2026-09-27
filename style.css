@@ -80,7 +80,8 @@ body {
            БЛОК 1: ДИЗАЙН МЕНЮ (КЛАССЫ, ТЕМЫ, ПУТЬ)
            ========================================= */
         #menu-view {
-            padding: 20px;
+    padding: 20px;
+    padding-top: calc(20px + env(safe-area-inset-top, 0px));
             display: flex;
             justify-content: center;
             align-items: flex-start;
