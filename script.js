@@ -979,6 +979,7 @@ setTimeout(() => {
 
             // красим статус-бар сразу в момент переключения, не дожидаясь,
             // пока обёртка сама заметит смену пикселей — без задержки/дёргания
+            alert('setStatusBarColor: ' + typeof window.setStatusBarColor + ' | AndroidNative: ' + typeof window.AndroidNative);
             if (typeof window.setStatusBarColor === 'function') {
                 window.setStatusBarColor(MENU_PAGE_STATUS_BAR_COLOR[pageId] || '#ffffff');
             }
