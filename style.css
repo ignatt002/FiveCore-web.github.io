@@ -898,16 +898,16 @@ math-field::part(virtual-keyboard-toggle) { display: none !important; }
         }
 
         .repetition-title {
-            font-family: 'Nunito', sans-serif;
-            font-size: 2.75rem;
-            line-height: 1;
-            font-weight: 900;
-            color: white;
-            margin: 0 0 20px;
-            letter-spacing: 0.02em;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-            text-align: left;
-        }
+    font-family: 'Nunito', sans-serif;
+    font-size: 2.75rem;
+    line-height: 1;
+    font-weight: 900;
+    color: white;
+    margin: 12px 0 20px;
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    text-align: left;
+}
 
         .repetition-subtitle {
             font-family: 'Nunito', sans-serif;
@@ -2318,4 +2318,4 @@ body.draft-fullscreen-open {
     position: relative;
     z-index: 4;
     background: transparent;
-} 
+                   }
