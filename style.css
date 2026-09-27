@@ -1125,8 +1125,8 @@ math-field::part(virtual-keyboard-toggle) { display: none !important; }
 /* ================= ЭКРАН АККАУНТ (Account V2) ================= */
 .account-header-v2 {
     background: linear-gradient(180deg, #b35aeb 0%, #cf8df5 50%, #ffffff 100%);
-    padding: 40px 24px 64px 24px;
-    margin: -20px -20px 0;
+    padding: calc(40px + env(safe-area-inset-top, 0px)) 24px 64px 24px;
+    margin: calc(-20px - env(safe-area-inset-top, 0px)) -20px 0;
     position: relative;
 }
 
