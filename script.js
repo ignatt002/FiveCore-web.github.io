@@ -55,68 +55,115 @@ function onFirebaseReady(callback) {
   "https://cdn.jsdelivr.net/gh/ignatt002/blait@main/Veroatnost"
         ];
 
+        const COURSE_DATA_CACHE_KEY = 'fivecore_course_data_cache_v1';
+
+        // Применяет уже скачанные (или взятые из кеша) "сырые" данные тем/шпаргалок
+        // к COURSE_DATA и отрисовывает их — общий код для сетевого и кешированного пути
+        function applyCourseData(topicsData, csData) {
+            topicsData.forEach((data, index) => {
+                if (data.topic) {
+                    let topicCopy = JSON.parse(JSON.stringify(data.topic));
+                    topicCopy.baseId = data.topic.id;
+                    topicCopy.id = topicCopy.id + '-' + index;
+                    COURSE_DATA.topics.push(topicCopy);
+                }
+                if (data.lessons) {
+                    Object.assign(COURSE_DATA.lessons, data.lessons);
+                }
+                if (data.cheatSheets && Array.isArray(data.cheatSheets)) {
+                    data.cheatSheets.forEach(sheet => {
+                        if (!cheatSheetsConfig.find(s => s.id === sheet.id)) {
+                            cheatSheetsConfig.push(sheet);
+                        }
+                    });
+                }
+            });
+
+            csData.forEach(data => {
+                if (data.cheatSheets && Array.isArray(data.cheatSheets)) {
+                    data.cheatSheets.forEach(sheet => {
+                        if (!cheatSheetsConfig.find(s => s.id === sheet.id)) {
+                            cheatSheetsConfig.push(sheet);
+                        }
+                    });
+                }
+            });
+
+            preprocessCourseData();
+            renderTopics();
+            renderRepetitionTopics();
+        }
+
+        // Сбрасывает COURSE_DATA/cheatSheetsConfig перед повторным наполнением —
+        // нужно, когда applyCourseData вызывается второй раз в рамках одного запуска
+        function resetCourseDataState() {
+            COURSE_DATA.topics = [];
+            COURSE_DATA.lessons = {};
+            cheatSheetsConfig.length = 0;
+        }
+
+        // Скачивает свежие темы/шпаргалки с сети. При успехе — кладёт "сырые" данные
+        // в localStorage на СЛЕДУЮЩИЙ запуск (текущую сессию это не трогает).
+        // renderIfDone === true — также отрисовать результат сейчас (когда кеша не было
+        // вообще и ждать пришлось по-честному, как раньше).
+        async function fetchAndCacheCourseData(renderIfDone) {
+            const fetchPromises = TOPIC_URLS.map(url => fetch(url).then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            }));
+            const csPromises = CHEAT_SHEET_URLS.map(url => fetch(url).then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            }));
+
+            const [topicsData, csData] = await Promise.all([
+                Promise.all(fetchPromises),
+                Promise.all(csPromises)
+            ]);
+
+            try {
+                localStorage.setItem(COURSE_DATA_CACHE_KEY, JSON.stringify({ topicsData, csData }));
+            } catch (e) {
+                console.warn('Не удалось сохранить кеш тем:', e);
+            }
+
+            if (renderIfDone) {
+                resetCourseDataState();
+                applyCourseData(topicsData, csData);
+            }
+        }
+
         async function loadCourseData() {
             const topicsContainer = document.getElementById('topics-container');
-            
+
             if (TOPIC_URLS.length === 0) {
                 topicsContainer.innerHTML = '<div style="text-align:center; padding: 40px; color: #afafaf; font-weight: 700;">Нет добавленных тем.<br>Добавьте ссылки в массив TOPIC_URLS в коде.</div>';
                 return;
             }
 
-            topicsContainer.innerHTML = '<div style="text-align:center; padding: 40px;"><div class="topics-loading-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div style="color: #1CB0F6; font-weight: 800; font-size: 14px;">Загрузка тем</div></div>';
-
+            // Если есть кеш с прошлого запуска — показываем его СРАЗУ, без ожидания сети
+            let cached = null;
             try {
-                const fetchPromises = TOPIC_URLS.map(url => fetch(url).then(res => {
-                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                    return res.json();
-                }));
-                
-                const csPromises = CHEAT_SHEET_URLS.map(url => fetch(url).then(res => {
-                    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                    return res.json();
-                }));
+                const raw = localStorage.getItem(COURSE_DATA_CACHE_KEY);
+                if (raw) cached = JSON.parse(raw);
+            } catch (e) {
+                cached = null; // битый кеш — работаем так, будто его не было
+            }
 
-                const [topicsData, csData] = await Promise.all([
-                    Promise.all(fetchPromises),
-                    Promise.all(csPromises)
-                ]);
-
-                topicsData.forEach((data, index) => {
-                    if (data.topic) {
-                        // Клонируем объект, чтобы не мутировать исходный, если ссылки одинаковые
-                        let topicCopy = JSON.parse(JSON.stringify(data.topic));
-topicCopy.baseId = data.topic.id;
-topicCopy.id = topicCopy.id + '-' + index;
-                        COURSE_DATA.topics.push(topicCopy);
-                    }
-                    if (data.lessons) {
-                        Object.assign(COURSE_DATA.lessons, data.lessons);
-                    }
-                    // Оставляем поддержку шпаргалок внутри тем для обратной совместимости
-                    if (data.cheatSheets && Array.isArray(data.cheatSheets)) {
-                        data.cheatSheets.forEach(sheet => {
-                            if (!cheatSheetsConfig.find(s => s.id === sheet.id)) {
-                                cheatSheetsConfig.push(sheet);
-                            }
-                        });
-                    }
+            if (cached && cached.topicsData && cached.csData) {
+                applyCourseData(cached.topicsData, cached.csData);
+                // обновление качаем в фоне — но НЕ перерисовываем прямо сейчас:
+                // новые данные применятся только при следующем запуске
+                fetchAndCacheCourseData(false).catch(err => {
+                    console.warn('Фоновое обновление тем не удалось (не страшно, работаем на кеше):', err);
                 });
+                return;
+            }
 
-                // Обработка отдельных файлов со шпаргалками
-                csData.forEach(data => {
-                    if (data.cheatSheets && Array.isArray(data.cheatSheets)) {
-                        data.cheatSheets.forEach(sheet => {
-                            if (!cheatSheetsConfig.find(s => s.id === sheet.id)) {
-                                cheatSheetsConfig.push(sheet);
-                            }
-                        });
-                    }
-                });
-
-                // После загрузки всех данных рендерим темы
-                preprocessCourseData();
-                renderTopics();
-                renderRepetitionTopics();
+            // Кеша ещё нет (самый первый запуск) — ждём сеть по-честному, как раньше
+            topicsContainer.innerHTML = '<div style="text-align:center; padding: 40px;"><div class="topics-loading-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div style="color: #1CB0F6; font-weight: 800; font-size: 14px;">Загрузка тем</div></div>';
+            try {
+                await fetchAndCacheCourseData(true);
             } catch (error) {
                 console.error("Ошибка при загрузке данных:", error);
                 topicsContainer.innerHTML = '<div style="text-align:center; padding: 40px; color: #ff4b4b; font-weight: 700;">Ошибка загрузки тем.<br>Ой... Не переживайте, я уже исправляю это!</div>';
