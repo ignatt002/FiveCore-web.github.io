@@ -1331,6 +1331,10 @@ currentLessonFailedTasks = [];
                 }
             }
 
+            if (typeof autoGenerateLesson === 'function' && Array.isArray(currentLesson.tasks)) {
+                currentLesson.tasks = autoGenerateLesson(currentLesson.tasks);
+            }
+
             currentTaskIndex = 0;
             loadTask();
 
