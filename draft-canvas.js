@@ -266,6 +266,13 @@ function toggleDraftFullscreen() {
     btn.classList.toggle('active', draftIsFullscreen);
     document.body.classList.toggle('draft-fullscreen-open', draftIsFullscreen);
     if (modeToggle) modeToggle.classList.toggle('hidden', draftIsFullscreen);
+
+    // в приложении прячем системную полосу (время/батарея/интернет) целиком,
+    // пока открыт полноэкранный черновик — чтобы кнопки не упирались в неё
+    if (window.AndroidNative && typeof window.AndroidNative.setImmersiveMode === 'function') {
+        window.AndroidNative.setImmersiveMode(draftIsFullscreen);
+    }
+
     resizeDraftCanvas();
 
     if (draftIsFullscreen) {
