@@ -35,7 +35,7 @@ function onFirebaseReady(callback) {
         // ===================================================
         const TOPIC_URLS = [
   "https://cdn.jsdelivr.net/gh/ignatt002/blait@main/6-zadanie.json",
-  "https://raw.githubusercontent.com/ignatt002/blait/refs/heads/main/7-zadanie.json",
+  "https://cdn.jsdelivr.net/gh/ignatt002/blait@main/7-zadanie.json",
   "https://cdn.jsdelivr.net/gh/ignatt002/blait@main/8-zadanie.json",
   "https://cdn.jsdelivr.net/gh/ignatt002/blait@main/9-zadanie",
   "https://cdn.jsdelivr.net/gh/ignatt002/blait@main/10-zadanie",
@@ -49,7 +49,7 @@ function onFirebaseReady(callback) {
         // база шпаргалок
         // ===================================================
         const CHEAT_SHEET_URLS = [
-  "https://raw.githubusercontent.com/ignatt002/blait/refs/heads/main/theorema-pifagora.json",
+  "https://cdn.jsdelivr.net/gh/ignatt002/blait@main/theorema-pifagora.json",
   "https://cdn.jsdelivr.net/gh/ignatt002/blait@main/Discriminant",
   "https://cdn.jsdelivr.net/gh/ignatt002/blait@main/hpargalka.json",
   "https://cdn.jsdelivr.net/gh/ignatt002/blait@main/Veroatnost"
