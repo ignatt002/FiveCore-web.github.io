@@ -88,7 +88,7 @@
 
 <!-- Кнопка входа + флажок (плавающая, поверх интерфейса) -->
 <div id="app-download-btn-group" style="position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); left: 12px; z-index: 100; display: flex; align-items: stretch; background: white; border: 2px solid #e5e5e5; border-radius: 20px; overflow: hidden;">
-    <button type="button" onclick="document.getElementById('app-promo-modal-overlay').classList.remove('hidden')" style="background: white; border: none; padding: 8px 16px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; color: #9d9d9d;">Приложение</button>
+    <button type="button" onclick="document.getElementById('app-promo-modal-overlay').classList.remove('hidden'); document.getElementById('bottom-nav').classList.add('nav-hidden');" style="background: white; border: none; padding: 8px 16px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; color: #afafaf;">Приложение</button>
 </div>
 <script>
     // В приложении (APK) эту кнопку вообще не показываем — она только для сайта.
@@ -553,8 +553,8 @@
     </div>
 
     <!-- Модальные окна -->
-<div class="modal-overlay hidden" id="app-promo-modal-overlay" onclick="this.classList.add('hidden')">
-        <div class="report-modal" onclick="event.stopPropagation()" style="text-align: left; max-width: 440px;">
+<div class="modal-overlay hidden" id="app-promo-modal-overlay" onclick="this.classList.add('hidden'); document.getElementById('bottom-nav').classList.remove('nav-hidden');" style="touch-action: none;">
+        <div class="report-modal" onclick="event.stopPropagation()" style="text-align: left; width: 85%; max-width: 360px;">
             <div class="report-modal-title" style="text-align: center; font-family: 'Nunito', sans-serif;">Теперь FiveCore — приложение!</div>
             <div class="report-modal-text" style="font-family: 'Nunito', sans-serif;">
                 Установите FiveCore на смартфон, чтобы готовиться к ОГЭ ещё удобнее — прямо с рабочего стола!<br><br>
