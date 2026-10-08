@@ -4024,7 +4024,7 @@ function createGraphBox(graphCommands) {
     graphWrapper.style.transition = 'aspect-ratio 0.2s ease';
 
     const iframe = document.createElement('iframe');
-    iframe.src = 'https://ignatt002.github.io/graphics/';
+    iframe.src = 'https://raw.githubusercontent.com/FiveCore-web/graphics/refs/heads/main/index.html';
     iframe.style.width = '100%';
     iframe.style.height = '100%';
     iframe.style.border = '2px solid var(--border-color)';
